@@ -5,13 +5,11 @@ div.dokuwiki form.upload__plugin {
 }
 
 div.dokuwiki form.upload__plugin fieldset {
-    width: auto;
-    display: inline;
+    width: 70%;
     text-align: left;
 }
 
 div.dokuwiki form.upload__plugin label {
-    float: left;
     display: block;
     margin: 5px;
 }
@@ -25,18 +23,14 @@ div.dokuwiki form.upload__plugin label span {
 
 div.dokuwiki form.upload__plugin label input {
     display: inline;
-/*    float: left; */
     margin-left: 5px;
 }
 
 div.dokuwiki form.upload__plugin input.button {
-    float: left;
-    display: block;
+    /*display: block;*/
     margin: 5px;
 }
 
-div.dokuwiki form.upload__plugin input.button {
-    float: left;
-    display: block;
-    margin: 5px;
+div.dokuwiki form.upload__plugin textarea {
+    width: 50%;
 }

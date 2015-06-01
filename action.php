@@ -16,7 +16,8 @@ require_once(DOKU_INC . 'inc/media.php');
 require_once(DOKU_INC . 'inc/infoutils.php');
 
 class action_plugin_upload extends DokuWiki_Action_Plugin {
-
+    const METADATA_PREFIX = 'upload_meta_';
+    
     function getInfo() {
         return array(
             'author' => 'Franz Häfner',
@@ -79,6 +80,7 @@ class action_plugin_upload extends DokuWiki_Action_Plugin {
             $_POST['mediaid'] = $INPUT->post->str('new_name', $fixed);
             $JUMPTO = media_upload($NS, $AUTH);
             if ($JUMPTO) {
+                $this->store_metadata($JUMPTO);
                 $NS = getNS($JUMPTO);
                 $ID = $INPUT->post->str('page');
                 $NS = getNS($ID);
@@ -92,6 +94,25 @@ class action_plugin_upload extends DokuWiki_Action_Plugin {
         }
 
         return strcasecmp(substr($filename, strrpos($filename, '.') + 1), substr($fixed, strrpos($fixed, '.') + 1)) == 0;
+    }
+    
+    private function store_metadata($mediaId) {
+        global $INPUT;
+        $metadata = array();
+        foreach (array_keys($_POST) as $key) {
+            if (strpos($key, self::METADATA_PREFIX) !== 0) {
+                continue;
+            }
+            if (!$INPUT->post->has($key)) {
+                continue;
+            }
+            
+            $realKey = substr($key, strlen(self::METADATA_PREFIX));
+            $metadata[$realKey] = $INPUT->post->str($key);
+        }
+        var_dump($_POST, $metadata);
+        $metadata = array($this->getPluginName() => $metadata);
+        p_set_metadata($mediaId, $metadata);
     }
 
 }

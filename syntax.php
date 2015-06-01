@@ -57,12 +57,23 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
 
         $options['overwrite'] = in_array('OVERWRITE', $o);
         $options['renameable'] = in_array('RENAMEABLE', $o);
-        $options['fixed'] = in_array('FIXED', $o);
+        $options['fixed'] = in_array('FIXED', $o); 
+        
+        $ext_options = array('METADATA' => 'metadata');
+        foreach($o as $opt) {
+            foreach($ext_options as $ext_opt => $ext_key) {
+                if(strpos($opt, $ext_opt) !== 0) {
+                    continue;
+                }
+                // add one character for ':' delimiter
+                $data = substr($opt, strlen($ext_opt) + 1);
+                $options[$ext_key] = $this->parse_ext_option($data);
+            }
+        }
 
         if ($options['fixed']) {
-            $pos = strrpos($matches[0], ':');
-            $ns = substr($matches[0], 0, $pos);
-            $file = substr($matches[0], $pos + 1);
+            $ns = getNS($matches[0]);
+            $file = noNS($matches[0]);
         } else {
             $ns = $matches[0];
             $file = null;
@@ -114,22 +125,22 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
 
         $params = array();
         $params['id'] = 'upload_plugin';
-        $params['action'] = wl($ID);
+        //$params['action'] = wl($ID);
         $params['method'] = 'post';
         $params['enctype'] = 'multipart/form-data';
         $params['class'] = 'upload__plugin';
 
         // Modification of the default dw HTML upload form
         $form = new Doku_Form($params);
-        $form->startFieldset($lang['fileupload']);
+        $form->startFieldset($lang['puzzleupload']);
         $form->addElement(formSecurityToken());
         $form->addHidden('page', hsc($ID));
         $form->addHidden('ns', hsc($ns));
         $form->addHidden('file', hsc($file));
-        $form->addElement(form_makeFileField('upload', $lang['txt_upload'] . ':', 'upload__file'));
+        $form->addElement(form_makeFileField('upload', $lang['puzzlefile'], 'upload__file', 'block'));
         if ($options['renameable']) {
             // don't name this field here "id" because it is misinterpreted by DokuWiki if the upload form is not in media manager
-            $form->addElement(form_makeTextField('new_name', '', $lang['txt_filename'] . ':', 'upload__name'));
+            $form->addElement(form_makeTextField('new_name', '', $lang['txt_filename'] . ':', 'upload__name', 'block'));
         }
 
         if ($auth >= AUTH_DELETE) {
@@ -137,20 +148,64 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
                 //$form->addElement(form_makeCheckboxField('ow', 1, $lang['txt_overwrt'], 'dw__ow', 'check'));
                 // circumvent wrong formatting in doku_form
                 $form->addElement(
-                        '<label class="check" for="dw__ow">' .
+                        '<label class="check block" for="dw__ow">' .
                         '<span>' . $lang['txt_overwrt'] . '</span>' .
                         '<input type="checkbox" id="dw__ow" name="ow" value="1"/>' .
                         '</label>'
                 );
             }
         }
-        $form->addElement(form_makeButton('submit', '', $lang['btn_upload']));
+
+        if (isset($options['metadata'])) {
+           foreach($options['metadata'] as $key => $attrs) {
+               $name = action_plugin_upload::METADATA_PREFIX . hsc($key);
+               switch($attrs['type']) {
+                   case 'text':
+                       $hkey = hsc($key);
+                       $el = '<label for="dw__'.$hkey.'" class="block">' .
+                         '<span>' . hsc($attrs['label']) . '</span>' .
+                         '<textarea id="dw__'.$hkey.'" name="'.$name.'" rows="6" required="required"></textarea>' .
+                         '</label><br/>';
+                       break;
+                   default:
+                       $el = form_makeTextField($name, '', $attrs['label'], '', 'block', array('required' => 'required'));
+                       break;
+               }
+               $form->addElement($el);
+           }
+        }
+
         $form->endFieldset();
+        $form->addElement(form_makeButton('submit', '', $lang['btn_upload']));
 
         $html .= '<div class="upload_plugin"><p>' . NL;
         $html .= $form->getForm();
         $html .= '</p></div>' . NL;
         return $html;
+    }
+    
+    private function parse_ext_option($string) {
+        $data = array();
+        foreach(split(';', $string) as $segment) {
+            $segment = trim($segment);
+            list($key, $value) = split('=', $segment);
+            $key = trim($key);
+            $value = trim($value);
+            $parts = explode('.', $key);
+            if (count($parts) > 1) {
+                $key = $parts[0];      
+                $type = $parts[1];
+            } else {
+                $key = $parts[0];
+                $type = '.unknown';
+            }
+
+            $item = array();
+            $item['label'] = $value;
+            $item['type'] = $type;
+            $data[$key] = $item;
+        }
+        return $data;
     }
 
 }
