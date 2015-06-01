@@ -3,11 +3,16 @@
 /**
  * Upload plugin, allows upload for users with correct
  * permission fromin a wikipage to a defined namespace.
+ * 
+ * Heavily modified for specialized case of uploading files
+ * for Kachna puzzlehunt game.
+ * 
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
  * @author Christian Moll <christian@chrmoll.de>
- * @author    Franz Häfner <fhaefner@informatik.tu-cottbus.de>
- * @author    Randolf Rotta <rrotta@informatik.tu-cottbus.de>
+ * @author Franz Häfner <fhaefner@informatik.tu-cottbus.de>
+ * @author Randolf Rotta <rrotta@informatik.tu-cottbus.de>
+ * @author Michal Koutný <xm.koutny@gmail.com>
  */
 if (!defined('NL'))
     define('NL', "\n");
@@ -46,16 +51,27 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
 
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('\{\{upload>.+?\}\}', $mode, 'plugin_upload');
+        $this->Lexer->addSpecialPattern('\{\{uploadinfo>.+?\}\}', $mode, 'plugin_upload');
     }
 
     function handle($match, $state, $pos, &$handler) {
         global $ID;
 
+        // handle special case first
+        if (substr($match, 0, 13) == '{{uploadinfo>') {
+            $file = substr($match, 13, -2);
+            $ns = getNS($file);
+            return array('uploadns' => hsc($ns), 'file' => $file, 
+                'para' => array('info' => true));
+        }
+
+        // now continue with ordinary upload
         $match = substr($match, 9, -2);
         $matches = explode('|', $match, 2);
         $o = explode('|', $matches[1]);
 
         $options['overwrite'] = in_array('OVERWRITE', $o);
+        $options['fulloverwrite'] = in_array('FULLOVERWRITE', $o);
         $options['renameable'] = in_array('RENAMEABLE', $o);
         $options['fixed'] = in_array('FIXED', $o); 
         
@@ -95,7 +111,11 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
             //check auth
             $auth = auth_quickaclcheck($data['uploadns'] . ':*');
 
-            if ($auth >= AUTH_UPLOAD) {
+            if (isset($data['para']['info']) && $data['para']['info']) {
+                if ($auth >= AUTH_READ) {
+                    $renderer->doc .= $this->upload_info($data['file']);
+                }      
+            } else if ($auth >= AUTH_UPLOAD) {
                 $renderer->doc .= $this->upload_plugin_uploadform($data['uploadns'], $auth, $data['para'], $data['file']);
 //				$renderer->info['cache'] = false;
             }
@@ -119,7 +139,11 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
         global $ID;
         global $lang;
         $html = '';
-
+        
+        if (!$this->getConf('show_upload')) {
+            return;
+        }
+        
         if ($auth < AUTH_UPLOAD)
             return;
 
@@ -153,6 +177,8 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
                         '<input type="checkbox" id="dw__ow" name="ow" value="1"/>' .
                         '</label>'
                 );
+            } else if ($options['fulloverwrite']) {
+                $form->addHidden('ow', "1");
             }
         }
 
@@ -177,7 +203,8 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
 
         $form->endFieldset();
         $form->addElement(form_makeButton('submit', '', $lang['btn_upload']));
-
+        
+        $html .= '<p>Zde můžete uploadovat vaši šifru ve formátu PDF (nezapomeňte též vyplnit řešení šifry).</p>';
         $html .= '<div class="upload_plugin"><p>' . NL;
         $html .= $form->getForm();
         $html .= '</p></div>' . NL;
@@ -208,6 +235,28 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
         return $data;
     }
 
+    private function upload_info($media_id) {
+        $filename = mediaFN($media_id);
+        if (!file_exists($filename)) {
+            return '<p>Zatím jste šifru nenahráli.</p>';
+        }
+
+        $link = ml($media_id);
+        $timestamp = date('j. n. Y H:i:s', filemtime($filename));
+        $metadata = p_get_metadata($media_id, $this->getPluginName());
+        $result = $metadata['result'];
+        $solution = $metadata['solution'];
+        $html = '<p>';
+        $html .= 'Vaše <a href="' . hsc($link) . '">odevzdaná šifra</a>, verze z '.$timestamp.', ';
+        $html .= 'její tajenka je &bdquo;<span class="kachna-hider kachna-hidden">' . hsc($result) . '</span>&ldquo;. ';
+        $html .= 'Níže je autorský postup řešení.';
+        $html .= '</p>';
+        $html .= '<pre class="kachna-hider kachna-hidden">';
+        $html .= hsc($solution);
+        $html .= '</pre>';
+                     
+        return $html;
+    }
 }
 
 //Setup VIM: ex: et ts=4 enc=utf-8 :

@@ -34,3 +34,15 @@ div.dokuwiki form.upload__plugin input.button {
 div.dokuwiki form.upload__plugin textarea {
     width: 50%;
 }
+
+.kachna-hider {
+    cursor: help;
+    background-color: @ini_background;
+    color: @ini_text;
+}
+
+.kachna-hidden {
+    background-color: @ini_background;
+    color: @ini_background;
+    box-shadow:0 0px 10px rgba(0,0,0,.4);
+}

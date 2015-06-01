@@ -110,7 +110,6 @@ class action_plugin_upload extends DokuWiki_Action_Plugin {
             $realKey = substr($key, strlen(self::METADATA_PREFIX));
             $metadata[$realKey] = $INPUT->post->str($key);
         }
-        var_dump($_POST, $metadata);
         $metadata = array($this->getPluginName() => $metadata);
         p_set_metadata($mediaId, $metadata);
     }
