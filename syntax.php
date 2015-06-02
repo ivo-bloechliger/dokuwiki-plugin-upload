@@ -28,6 +28,15 @@ require_once(DOKU_INC . 'inc/infoutils.php');
 
 class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
 
+    /**
+     * @var helper_plugin_upload
+     */
+    private $helper;
+    
+    public function __construct() {
+        $this->helper = $this->loadHelper('upload');
+    }
+
     function getInfo() {
         return array(
             'author' => 'Franz Häfner',
@@ -236,16 +245,16 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
     }
 
     private function upload_info($media_id) {
-        $filename = mediaFN($media_id);
-        if (!file_exists($filename)) {
+        $metadata = $this->helper->get_metadata($media_id);
+        if (!$metadata) {
             return '<p>Zatím jste šifru nenahráli.</p>';
         }
 
         $link = ml($media_id);
-        $timestamp = date('j. n. Y H:i:s', filemtime($filename));
-        $metadata = p_get_metadata($media_id, $this->getPluginName());
         $result = $metadata['result'];
         $solution = $metadata['solution'];
+        $timestamp = date('Y-m-d H:i:s', $metadata['timestamp']);
+
         $html = '<p>';
         $html .= 'Vaše <a href="' . hsc($link) . '">odevzdaná šifra</a>, verze z '.$timestamp.', ';
         $html .= 'její tajenka je &bdquo;<span class="kachna-hider kachna-hidden">' . hsc($result) . '</span>&ldquo;. ';
@@ -254,7 +263,7 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
         $html .= '<pre class="kachna-hider kachna-hidden">';
         $html .= hsc($solution);
         $html .= '</pre>';
-                     
+        
         return $html;
     }
 }
