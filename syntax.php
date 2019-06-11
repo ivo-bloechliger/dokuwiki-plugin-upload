@@ -21,7 +21,7 @@ require_once(DOKU_INC . 'inc/auth.php');
 
 require_once(DOKU_INC . 'inc/infoutils.php');
 
-class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_upload2 extends DokuWiki_Syntax_Plugin {
 
     function getInfo() {
         return array(
@@ -32,7 +32,7 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
             'desc' => 'upload plugin can add a link to the media manager in your wikipage.
             			Basic syntax: {{upload>namespace|option1|option2}}
 				Use @page@ as namespage to use ID of the actual page as namespace or @current@ to use the namespace the current page is in.',
-            'url' => 'http://wiki.splitbrain.org/plugin:upload',
+            'url' => 'http://wiki.splitbrain.org/plugin:upload2',
         );
     }
 
