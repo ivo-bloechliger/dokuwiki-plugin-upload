@@ -45,7 +45,7 @@ class syntax_plugin_upload extends DokuWiki_Syntax_Plugin {
     }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\{upload>.+?\}\}', $mode, 'plugin_upload');
+        $this->Lexer->addSpecialPattern('\{\{upload>.+?\}\}', $mode, 'plugin_upload2');
     }
 
     function handle($match, $state, $pos, &$handler) {
