@@ -78,7 +78,6 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
             }
             $_POST['mediaid'] = $INPUT->post->str('new_name', $fixed);
             $JUMPTO = media_upload($NS, $AUTH);
-            $JUMPTO = 'start'
             if ($JUMPTO) {
                 $NS = getNS($JUMPTO);
                 $ID = $INPUT->post->str('page');
