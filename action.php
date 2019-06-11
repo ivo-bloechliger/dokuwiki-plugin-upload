@@ -91,7 +91,7 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
                 $ID = $INPUT->post->str('page');
                 $NS = getNS($ID);
             }
-            $JUMPTO = $old_id;
+            $JUMPTO = 'start'; #$old_id;
             $ID = $ID;
             $NS = getNS($ID);
             /*$NS = getNS($old_id);
