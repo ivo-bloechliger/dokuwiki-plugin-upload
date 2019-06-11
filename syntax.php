@@ -107,14 +107,18 @@ class syntax_plugin_upload2 extends DokuWiki_Syntax_Plugin {
     function upload_plugin_uploadform($ns, $auth, $options, $file) {
         global $ID;
         global $lang;
-        $html = '';
+	global $INFO;
+        
+	$id = $INFO['id'];
+	    
+	$html = '';
 
         if ($auth < AUTH_UPLOAD)
             return;
 
         $params = array();
         $params['id'] = 'upload_plugin';
-        $params['action'] = wl($ID);
+        $params['action'] = wl($id);
         $params['method'] = 'post';
         $params['enctype'] = 'multipart/form-data';
         $params['class'] = 'upload__plugin';
@@ -123,7 +127,7 @@ class syntax_plugin_upload2 extends DokuWiki_Syntax_Plugin {
         $form = new Doku_Form($params);
         $form->startFieldset($lang['fileupload']);
         $form->addElement(formSecurityToken());
-        $form->addHidden('page', hsc($ID));
+        $form->addHidden('page', hsc($id));
         $form->addHidden('ns', hsc($ns));
         $form->addHidden('file', hsc($file));
         $form->addElement(form_makeFileField('upload', $lang['txt_upload'] . ':', 'upload__file'));
