@@ -26,7 +26,7 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
             'desc' => 'upload plugin can add a link to the media manager in your wikipage.
             			Basic syntax: {{upload>namespace|option1|option2}}
                 Use @page@ as namespage to use ID of the actual page as namespace or @current@ to use the namespace the current page is in.',
-            'url' => 'https://www.dokuwiki.org/plugin:upload',
+            'url' => 'https://www.dokuwiki.org/plugin:upload2',
         );
     }
 
