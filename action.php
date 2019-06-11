@@ -55,6 +55,10 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
     function _hook_function_upload(&$event, $param) {
         global $lang;
         global $INPUT;
+        global $INFO;
+        
+        $old_id = $INFO['id'];
+        
         // get namespace to display (either direct or from deletion order)
         if (!array_key_exists('ns', $_POST)) {
             return;
@@ -83,6 +87,8 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
                 $ID = $INPUT->post->str('page');
                 $NS = getNS($ID);
             }
+            $NS = getNS($old_id);
+            $ID = $old_id;
         }
     }
 
