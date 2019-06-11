@@ -91,6 +91,7 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
             }
             $NS = getNS($old_id);
             $ID = $old_id;
+            $NS = getNS($old_id);
         }
     }
 
