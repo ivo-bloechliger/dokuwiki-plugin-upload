@@ -15,7 +15,7 @@ require_once DOKU_PLUGIN . 'action.php';
 require_once(DOKU_INC . 'inc/media.php');
 require_once(DOKU_INC . 'inc/infoutils.php');
 
-class action_plugin_upload extends DokuWiki_Action_Plugin {
+class action_plugin_upload2 extends DokuWiki_Action_Plugin {
 
     function getInfo() {
         return array(
