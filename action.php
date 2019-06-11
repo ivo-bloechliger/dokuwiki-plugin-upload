@@ -61,7 +61,7 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
         
         $old_id = $ID;*/
         
-        $old_id = $INFO['id'];
+        /*$old_id = $INFO['id'];*/
         
         // get namespace to display (either direct or from deletion order)
         if (!array_key_exists('ns', $_POST)) {
@@ -91,9 +91,9 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
                 $ID = $INPUT->post->str('page');
                 $NS = getNS($ID);
             }
-            $JUMPTO = 'start'; #$old_id;
+            /*$JUMPTO = 'start'; #$old_id;
             $ID = $ID;
-            $NS = getNS($ID);
+            $NS = getNS($ID);*/
             /*$NS = getNS($old_id);
             $ID = $old_id;
             $NS = getNS($old_id);*/
