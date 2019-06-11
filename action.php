@@ -56,8 +56,10 @@ class action_plugin_upload2 extends DokuWiki_Action_Plugin {
         global $lang;
         global $INPUT;
         global $INFO;
+        global $NS; 
+        global $ID; 
         
-        $old_id = $INFO['id'];
+        $old_id = $ID;
         
         // get namespace to display (either direct or from deletion order)
         if (!array_key_exists('ns', $_POST)) {
