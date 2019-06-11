@@ -1,7 +1,7 @@
-base upload
-author Christian Moll, Franz Häfner, Randolf Rotta
+base upload2
+author Christian Moll, Franz HÃ¤fner, Randolf Rotta
 email christian [at] chrmoll [dot] de, fhaefner [at] informatik [dot] tu [dash] cottbus [dot] de
 date 2014-01-02
-name upload Plugin
-desc Includes file upload into wikipages depending on the user rights.
-url http://dokuwiki.org/plugin:upload
+name upload Plugin (patched)
+desc Includes file upload into wikipages depending on the user rights (patched).
+url http://dokuwiki.org/plugin:upload2
